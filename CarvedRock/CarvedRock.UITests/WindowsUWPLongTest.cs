@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
+using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Appium.Enums;
 //using OpenQA.Selenium.Appium.Interactions;
 using OpenQA.Selenium.Appium.Service;
@@ -20,13 +21,13 @@ namespace CarvedRock.UITests
         public void AddNewItemWithNewCategory()
         {
             var capabilities = new AppiumOptions();
-            capabilities.AddAdditionalCapability(MobileCapabilityType.App, "8b831c56-bc54-4a8b-af94-a448f80118e7_sezxftbtgh66j!App");
-            capabilities.AddAdditionalCapability(MobileCapabilityType.PlatformName, "Windows");
-            capabilities.AddAdditionalCapability(MobileCapabilityType.DeviceName, "WindowsPC");
+            capabilities.App = "8b831c56-bc54-4a8b-af94-a448f80118e7_sezxftbtgh66j!App";
+            capabilities.PlatformName = "Windows";
+            capabilities.DeviceName = "WindowsPC";
 
             var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().Build();
             _appiumLocalService.Start();
-            var driver = new WindowsDriver<WindowsElement>(_appiumLocalService, capabilities);
+            var driver = new WindowsDriver(_appiumLocalService, capabilities);
 
             // Create new Category item first
             var categoryButton = driver.FindElement(MobileBy.AccessibilityId("AddCategory"));
@@ -41,14 +42,14 @@ namespace CarvedRock.UITests
             var saveCategory = driver.FindElement(MobileBy.AccessibilityId("Save"));
             saveCategory.Click();
 
-            var el1 = driver.FindElementByAccessibilityId("Add");
+            var el1 = driver.FindElement(MobileBy.AccessibilityId("Add"));
             el1.Click();
 
-            var elItemText = driver.FindElementByAccessibilityId("ItemText");
+            var elItemText = driver.FindElement(MobileBy.AccessibilityId("ItemText"));
             elItemText.Clear();
             elItemText.SendKeys("This is a new Item");
 
-            var elItemDetail = driver.FindElementByAccessibilityId("ItemDescription");
+            var elItemDetail = driver.FindElement(MobileBy.AccessibilityId("ItemDescription"));
             elItemDetail.Clear();
             elItemDetail.SendKeys("These are the details");
 
@@ -58,23 +59,23 @@ namespace CarvedRock.UITests
             var categoryListItem = elItemCategory.FindElement(By.Name("New category from automation"));
             categoryListItem.Click();
 
-            var elSave = driver.FindElementByAccessibilityId("Save");
+            var elSave = driver.FindElement(MobileBy.AccessibilityId("Save"));
             elSave.Click();
             elSave.ClearCache();
 
             //wait for progress bar to disapear
-            var wait = new DefaultWait<WindowsDriver<WindowsElement>>(driver)
+            var wait = new DefaultWait<WindowsDriver>(driver)
             {
                 Timeout = TimeSpan.FromSeconds(60),
                 PollingInterval = TimeSpan.FromMilliseconds(500)
             };
             wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-            wait.Until(d => d.FindElementByName("Second item"));
+            wait.Until(d => d.FindElement(MobileBy.AccessibilityId("Second item")));
 
-            var listview = driver.FindElementByAccessibilityId("ItemsListView");
+            var listview = driver.FindElement(MobileBy.AccessibilityId("ItemsListView"));
 
             //now use wait to scroll untill we find item
-            wait = new DefaultWait<WindowsDriver<WindowsElement>>(driver)
+            wait = new DefaultWait<WindowsDriver>(driver)
             {
                 Timeout = TimeSpan.FromSeconds(60),
                 PollingInterval = TimeSpan.FromMilliseconds(500)
@@ -91,7 +92,7 @@ namespace CarvedRock.UITests
                 FlickUp.AddAction(input.CreatePointerUp(MouseButton.Left));
                 driver.PerformActions(new List<ActionSequence>() { FlickUp });
 
-                return d.FindElementByName("This is a new Item");
+                return d.FindElement(MobileBy.AccessibilityId("This is a new Item"));
             });
 
             Assert.IsTrue(elementfound != null);
@@ -103,41 +104,44 @@ namespace CarvedRock.UITests
         public void AddNewItem()
         {
             var capabilities = new AppiumOptions();
-            capabilities.AddAdditionalCapability(MobileCapabilityType.App, "8b831c56-bc54-4a8b-af94-a448f80118e7_sezxftbtgh66j!App");
-            capabilities.AddAdditionalCapability(MobileCapabilityType.PlatformName, "Windows");
-            capabilities.AddAdditionalCapability(MobileCapabilityType.DeviceName, "WindowsPC");
+            capabilities.App = "8b831c56-bc54-4a8b-af94-a448f80118e7_sezxftbtgh66j!App";
+            capabilities.PlatformName= "Windows";
+            capabilities.DeviceName = "WindowsPC";
+            capabilities.AutomationName = "Windows";
+            System.Environment.SetEnvironmentVariable("APPIUM_BINARY_PATH", @"C:\Users\vries\.appium");
 
-            var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().Build();
-            _appiumLocalService.Start();
-            var driver = new WindowsDriver<WindowsElement>(_appiumLocalService, capabilities);
+            //var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().Build();
+            //_appiumLocalService.Start();
+            //var driver = new WindowsDriver(_appiumLocalService, capabilities);
+            var driver = new WindowsDriver(new Uri("http://127.0.0.1:4723/"), capabilities);
 
-            var el1 = driver.FindElementByAccessibilityId("Add");
+            var el1 = driver.FindElement(MobileBy.AccessibilityId("Add"));
             el1.Click();
 
-            var elItemText = driver.FindElementByAccessibilityId("ItemText");
+            var elItemText = driver.FindElement(MobileBy.AccessibilityId("ItemText"));
             elItemText.Clear();
             elItemText.SendKeys("This is a new Item");
 
-            var elItemDetail = driver.FindElementByAccessibilityId("ItemDescription");
+            var elItemDetail = driver.FindElement(MobileBy.AccessibilityId("ItemDescription"));
             elItemDetail.Clear();
             elItemDetail.SendKeys("These are the details");
 
-            var elSave = driver.FindElementByAccessibilityId("Save");
+            var elSave = driver.FindElement(MobileBy.AccessibilityId("Save"));
             elSave.Click();
 
             //wait for progress bar to disapear
-            var wait = new DefaultWait<WindowsDriver<WindowsElement>>(driver)
+            var wait = new DefaultWait<WindowsDriver>(driver)
             {
                 Timeout = TimeSpan.FromSeconds(60),
                 PollingInterval = TimeSpan.FromMilliseconds(500)
             };
             wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-            wait.Until(d => d.FindElementByName("Second item"));
+            wait.Until(d => d.FindElement(MobileBy.AccessibilityId("Second item")));
 
-            var listview = driver.FindElementByAccessibilityId("ItemsListView");
+            var listview = driver.FindElement(MobileBy.AccessibilityId("ItemsListView"));
 
             //now use wait to scroll untill we find item
-            wait = new DefaultWait<WindowsDriver<WindowsElement>>(driver)
+            wait = new DefaultWait<WindowsDriver>(driver)
             {
                 Timeout = TimeSpan.FromSeconds(60),
                 PollingInterval = TimeSpan.FromMilliseconds(500)
@@ -154,7 +158,7 @@ namespace CarvedRock.UITests
                 FlickUp.AddAction(input.CreatePointerUp(MouseButton.Left));
                 driver.PerformActions(new List<ActionSequence>() { FlickUp });
 
-                return d.FindElementByName("This is a new Item");
+                return d.FindElement(MobileBy.AccessibilityId("This is a new Item"));
             });
 
             Assert.IsTrue(elementfound != null);
@@ -166,25 +170,25 @@ namespace CarvedRock.UITests
         public void MasterDetail()
         {
             var capabilities = new AppiumOptions();
-            capabilities.AddAdditionalCapability(MobileCapabilityType.App, "8b831c56-bc54-4a8b-af94-a448f80118e7_sezxftbtgh66j!App");
-            capabilities.AddAdditionalCapability(MobileCapabilityType.PlatformName, "Windows");
-            capabilities.AddAdditionalCapability(MobileCapabilityType.DeviceName, "WindowsPC");
+            capabilities.AddAdditionalAppiumOption(MobileCapabilityType.App, "8b831c56-bc54-4a8b-af94-a448f80118e7_sezxftbtgh66j!App");
+            capabilities.AddAdditionalAppiumOption(MobileCapabilityType.PlatformName, "Windows");
+            capabilities.AddAdditionalAppiumOption(MobileCapabilityType.DeviceName, "WindowsPC");
 
             var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().Build();
             _appiumLocalService.Start();
-            var driver = new WindowsDriver<WindowsElement>(_appiumLocalService, capabilities);
+            var driver = new WindowsDriver(_appiumLocalService, capabilities);
 
             // tap on second item
-            var el1 = driver.FindElementByName("Second item");
+            var el1 = driver.FindElement(MobileBy.AccessibilityId("Second item"));
 
             el1.Click();
-            var el2 = driver.FindElementByAccessibilityId("ItemText");
+            var el2 = driver.FindElement(MobileBy.AccessibilityId("ItemText"));
             Assert.IsTrue(el2.Text == "Second item");
 
-            var backButton = driver.FindElementByAccessibilityId("Back");
+            var backButton = driver.FindElement(MobileBy.AccessibilityId("Back"));
             backButton.Click();
 
-            var el3 = driver.FindElementByName("Fourth item");
+            var el3 = driver.FindElement(MobileBy.AccessibilityId("Fourth item"));
             Assert.IsTrue(el3 != null);
 
             driver.CloseApp();

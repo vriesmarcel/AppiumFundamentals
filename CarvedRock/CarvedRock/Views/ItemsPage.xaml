@@ -43,12 +43,13 @@
                                 LineBreakMode="NoWrap" 
                                 Style="{DynamicResource ListItemTextStyle}" 
                                 FontSize="16" />
-                            <StackLayout Orientation="Horizontal">
+                            <StackLayout Orientation="Horizontal" AutomationProperties.Name="{Binding Description}">
                             <Label Text="{Binding Description}" 
                                 d:Text="Item descripton"
                                 LineBreakMode="NoWrap"
                                 Style="{DynamicResource ListItemDetailTextStyle}"
-                                FontSize="13" />
+                                FontSize="13" 
+                                   />
 
                                 <Label Text="{Binding Category}" 
                                 d:Text="Item Category"
