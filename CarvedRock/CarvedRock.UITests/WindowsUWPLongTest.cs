@@ -1,17 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
-using OpenQA.Selenium.Appium.Android;
-using OpenQA.Selenium.Appium.Enums;
-//using OpenQA.Selenium.Appium.Interactions;
 using OpenQA.Selenium.Appium.Service;
 using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using static System.Net.Mime.MediaTypeNames;
+using System.IO;
 
 namespace CarvedRock.UITests
 {
@@ -29,17 +25,39 @@ namespace CarvedRock.UITests
 
             System.Environment.SetEnvironmentVariable("APPIUM_HOME", @"C:\Users\vries\.appium\node_modules\appium-windows-driver");
 
-            var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().Build();
+            var _appiumLocalService = new AppiumServiceBuilder()
+                                 .UsingAnyFreePort()
+                                 .WithLogFile(new FileInfo(@"c:\tmp\appiumlogfile.txt"))
+                                 .Build();
             _appiumLocalService.Start();
 
             var driver = new WindowsDriver(_appiumLocalService, capabilities);
             // testing starts here....
-           
+            var offscreenElement = driver.FindElement(MobileBy.Name("Twelfth item"));
+            var isOfScreenAttribute = offscreenElement.GetAttribute("IsOffscreen");
+            var rectangle = offscreenElement.Rect;
+            var listView = driver.FindElement(MobileBy.AccessibilityId("ItemsListView"));
+            FlickUp(driver, listView);
+
+            offscreenElement.ClearCache();
+            isOfScreenAttribute = offscreenElement.GetAttribute("IsOffscreen");
+            rectangle = offscreenElement.Rect;
             // clean up when done
             driver.Close();
         }
 
-            [TestMethod]
+        private void FlickUp(WindowsDriver driver, IWebElement control)
+        {
+            var input = new PointerInputDevice(PointerKind.Touch);
+            ActionSequence FlickUp = new ActionSequence(input);
+            FlickUp.AddAction(input.CreatePointerMove(control, 0, 0, TimeSpan.Zero));
+            FlickUp.AddAction(input.CreatePointerDown(MouseButton.Left));
+            FlickUp.AddAction(input.CreatePointerMove(control, 0, -500, TimeSpan.FromMilliseconds(200)));
+            FlickUp.AddAction(input.CreatePointerUp(MouseButton.Left));
+            driver.PerformActions(new List<ActionSequence>() { FlickUp });
+        }
+
+        [TestMethod]
         public void AddNewItemWithNewCategory()
         {
             var capabilities = new AppiumOptions();
@@ -49,10 +67,10 @@ namespace CarvedRock.UITests
             capabilities.AutomationName= "Windows";
             System.Environment.SetEnvironmentVariable("APPIUM_HOME", @"C:\Users\vries\.appium\node_modules\appium-windows-driver");
 
-            //var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().Build();
-            //_appiumLocalService.Start();
-            //var driver = new WindowsDriver(_appiumLocalService, capabilities);
-            var driver = new WindowsDriver(new Uri("http://127.0.0.1:4723/"), capabilities);
+            var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().WithLogFile(new FileInfo(@"c:\tmp\appiumlogfile2.txt")).Build();
+            _appiumLocalService.Start();
+            var driver = new WindowsDriver(_appiumLocalService, capabilities);
+
             // Create new Category item first
             var categoryButton = driver.FindElement(MobileBy.AccessibilityId("AddCategory"));
             categoryButton.Click();
@@ -80,7 +98,7 @@ namespace CarvedRock.UITests
             var elItemCategory = driver.FindElement(MobileBy.AccessibilityId("ItemCategory"));
             elItemCategory.Click();
 
-            var categoryListItem = elItemCategory.FindElement(By.XPath("//ComboBox/ListItem[5]"));
+            var categoryListItem = elItemCategory.FindElement(MobileBy.XPath("//ComboBox/ListItem[5]"));
             categoryListItem.Click();
 
             var elSave = driver.FindElement(MobileBy.AccessibilityId("Save"));
@@ -92,47 +110,20 @@ namespace CarvedRock.UITests
                 Timeout = TimeSpan.FromSeconds(60),
                 PollingInterval = TimeSpan.FromMilliseconds(500)
             };
- 
-            var listview = wait.Until(d =>
-            {
-                try
-                {
-                    var element = d.FindElement(MobileBy.AccessibilityId("ItemsListView"));
-                    return element;
-                }
-                catch (NoSuchElementException)
-                {
-                    // ignore
-                }
-                return null;
-            }
-            );
+            wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+            var listview = wait.Until(d => d.FindElement(MobileBy.AccessibilityId("ItemsListView")));
 
             //now use wait to scroll untill we find item
-
             var elementfound = wait.Until(d =>
             {
-                var input = new PointerInputDevice(PointerKind.Touch);
-                ActionSequence FlickUp = new ActionSequence(input);
-                FlickUp.AddAction(input.CreatePointerMove(listview, 0, 0, TimeSpan.Zero));
-                FlickUp.AddAction(input.CreatePointerDown(MouseButton.Left));
-                FlickUp.AddAction(input.CreatePointerMove(listview, 0, -500, TimeSpan.FromMilliseconds(200)));
-                FlickUp.AddAction(input.CreatePointerUp(MouseButton.Left));
-                d.PerformActions(new List<ActionSequence>() { FlickUp });
-                try
-                {
-                    var newItem = d.FindElement(MobileBy.Name("This is a new Item"));
-                    var isvisible = bool.Parse(newItem.GetProperty("IsOffscreen"));
-                    return isvisible ? newItem : null;
-                }
-                catch(NoSuchElementException)
-                { // ignore
-                }
-                return null;
+                FlickUp(driver, listview);
+                var newItem = d.FindElement(MobileBy.Name("This is a new Item"));
+                ;
+                var isvisible = newItem.Displayed;
+                return isvisible ? newItem : null;
             });
 
             Assert.IsTrue(elementfound!=null);
-
             driver.CloseApp();
         }
 
