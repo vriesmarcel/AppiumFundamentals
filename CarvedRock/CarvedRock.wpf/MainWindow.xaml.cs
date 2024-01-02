@@ -28,7 +28,7 @@ namespace CarvedRock.Wpf
         public MainWindow()
         {
             InitializeComponent();
-            MockDataStore store = MockDataStore.Current;
+            MockDataStore store = new MockDataStore();
             Items = store.GetItemsAsync().Result;
             this.DataContext = this;
         }

@@ -43,7 +43,7 @@
                                 LineBreakMode="NoWrap" 
                                 Style="{DynamicResource ListItemTextStyle}" 
                                 FontSize="16" />
-                            <StackLayout Orientation="Horizontal" AutomationProperties.Name="{Binding Description}">
+                            <StackLayout Orientation="Horizontal" AutomationId="{Binding Description}">
                             <Label Text="{Binding Description}" 
                                 d:Text="Item descripton"
                                 LineBreakMode="NoWrap"

@@ -32,17 +32,18 @@ namespace CarvedRock.UITests
             // specifyig which app we want to install and launch
             var currentPath = Directory.GetCurrentDirectory();
             Console.WriteLine($"Current path: {currentPath}");
-            var packagePath = Path.Combine(currentPath, @"..\..\..\AppsToTest\com.fluentbytes.carvedrock-Signed.apk");
+            var packagePath = Path.Combine(currentPath, @"..\..\..\AppsToTest\com.fluentbytes.carvedrock-x86_64.apk");
             packagePath = Path.GetFullPath(packagePath);
             Console.WriteLine($"Package path: {packagePath}");
             capabilities.App = packagePath;
-            capabilities.AddAdditionalAppiumOption(AndroidMobileCapabilityType.AppPackage, "com.fluentbytes.carvedrock");
-            capabilities.AddAdditionalAppiumOption(AndroidMobileCapabilityType.AppActivity, "crc641782d5af3c9cf50a.MainActivity");
-
+        
             //var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().WithLogFile(new FileInfo(@"c:\tmp\appiumlogfile.txt")).Build();
             //_appiumLocalService.Start(); ;
             //var driver = new AndroidDriver(_appiumLocalService, capabilities);
            var driver = new AndroidDriver(new Uri("http://127.0.0.1:4723/"), capabilities);
+
+            driver.ActivateApp("com.fluentbytes.carvedrock");
+
             // Create new Category item first
             var categoryButton = driver.FindElement(MobileBy.AccessibilityId("AddCategory"));
             categoryButton.Click();
@@ -70,7 +71,7 @@ namespace CarvedRock.UITests
             var elItemCategory = driver.FindElement(MobileBy.AccessibilityId("ItemCategory_Container"));
             elItemCategory.Click();
 
-            var picker = driver.FindElement(By.Id("android:id/contentPanel"));
+            var picker = driver.FindElement(By.Id("android:id/select_dialog_listview"));
             var categoryListItems = picker.FindElements(By.ClassName("android.widget.TextView"));
             foreach(var categoryElement in categoryListItems)
             {
@@ -133,37 +134,41 @@ namespace CarvedRock.UITests
 
             Assert.IsTrue(elementfound != null);
 
-            driver.CloseApp();
+            driver.TerminateApp("com.fluentbytes.carvedrock");
         }
 
         [TestMethod]
         public void AddNewItem()
         {
             System.Environment.SetEnvironmentVariable("ANDROID_HOME", @"C:\Program Files (x86)\Android\android-sdk");
-            System.Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Program Files\Android\jdk\microsoft_dist_openjdk_1.8.0.25\bin");
+            System.Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Program Files\Android\jdk\jdk-8.0.302.8-hotspot\jdk8u302-b08");
 
+            System.Environment.SetEnvironmentVariable("APPIUM_HOME", @"C:\Users\vries\.appium\node_modules\appium-uiautomator2-driver");
             var capabilities = new AppiumOptions();
             // automatic start of the emulator if not running
             capabilities.AddAdditionalAppiumOption(AndroidMobileCapabilityType.Avd, "demo_device");
             capabilities.AddAdditionalAppiumOption(AndroidMobileCapabilityType.AvdArgs, "-no-boot-anim -no-snapshot-load");
             capabilities.AddAdditionalAppiumOption(MobileCapabilityType.FullReset, true);
             // connecting to a device or emulator
-            capabilities.AddAdditionalAppiumOption(MobileCapabilityType.DeviceName, "2471736c36037ece");
-            capabilities.AddAdditionalAppiumOption(MobileCapabilityType.AutomationName, "UiAutomator2");
+            capabilities.DeviceName = "sdk_gphone64_x86_64";
+            capabilities.AutomationName = "UiAutomator2";
+       
             // specifyig which app we want to install and launch
             var currentPath = Directory.GetCurrentDirectory();
             Console.WriteLine($"Current path: {currentPath}");
-            var packagePath = Path.Combine(currentPath, @"..\..\..\AppsToTest\com.fluentbytes.carvedrock-x86.apk");
+            var packagePath = Path.Combine(currentPath, @"..\..\..\AppsToTest\com.fluentbytes.carvedrock-x86_64.apk");
             packagePath = Path.GetFullPath(packagePath);
             Console.WriteLine($"Package path: {packagePath}");
-            capabilities.AddAdditionalAppiumOption(MobileCapabilityType.App, packagePath);
+            capabilities.App = packagePath;
 
-            capabilities.AddAdditionalAppiumOption(AndroidMobileCapabilityType.AppPackage, "com.fluentbytes.carvedrock");
-            capabilities.AddAdditionalAppiumOption(AndroidMobileCapabilityType.AppActivity, "crc641782d5af3c9cf50a.MainActivity");
-
-            var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().Build();
-            _appiumLocalService.Start(); ;
+            var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().
+                                WithLogFile(new FileInfo(@"c:\tmp\appiumlogfile.txt")).Build();
+            _appiumLocalService.Start(); 
+            
             var driver = new AndroidDriver(_appiumLocalService, capabilities);
+            //var driver = new AndroidDriver(new Uri("http://127.0.0.1:4723/"), capabilities);
+
+            driver.ActivateApp("com.fluentbytes.carvedrock");
 
             var el1 = driver.FindElement(MobileBy.AccessibilityId("Add"));
             el1.Click();
@@ -238,7 +243,7 @@ namespace CarvedRock.UITests
         public void MasterDetail()
         {
             System.Environment.SetEnvironmentVariable("ANDROID_HOME", @"C:\Program Files (x86)\Android\android-sdk");
-            System.Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Program Files\Android\jdk\microsoft_dist_openjdk_1.8.0.25\bin");
+            System.Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Program Files\Android\jdk\jdk-8.0.302.8-hotspot\jdk8u302-b08");
 
             var capabilities = new AppiumOptions();
             // automatic start of the emulator if not running
@@ -246,22 +251,22 @@ namespace CarvedRock.UITests
             capabilities.AddAdditionalAppiumOption(AndroidMobileCapabilityType.AvdArgs, "-no-boot-anim -no-snapshot-load");
             capabilities.AddAdditionalAppiumOption(MobileCapabilityType.FullReset, true);
             // connecting to a device or emulator
-            capabilities.AddAdditionalAppiumOption(MobileCapabilityType.DeviceName, "2471736c36037ece");
-            capabilities.AddAdditionalAppiumOption(MobileCapabilityType.AutomationName, "UiAutomator2");
+            capabilities.DeviceName = "sdk_gphone64_x86_64";
+            capabilities.AutomationName = "UiAutomator2";
             // specifyig which app we want to install and launch
             var currentPath = Directory.GetCurrentDirectory();
             Console.WriteLine($"Current path: {currentPath}");
-            var packagePath = Path.Combine(currentPath, @"..\..\..\AppsToTest\com.fluentbytes.carvedrock-x86.apk");
+            var packagePath = Path.Combine(currentPath, @"..\..\..\AppsToTest\com.fluentbytes.carvedrock-x86_64.apk");
             packagePath = Path.GetFullPath(packagePath);
             Console.WriteLine($"Package path: {packagePath}");
-            capabilities.AddAdditionalAppiumOption(MobileCapabilityType.App, packagePath);
+            capabilities.App = packagePath;
 
-            capabilities.AddAdditionalAppiumOption(AndroidMobileCapabilityType.AppPackage, "com.fluentbytes.carvedrock");
-            capabilities.AddAdditionalAppiumOption(AndroidMobileCapabilityType.AppActivity, "crc641782d5af3c9cf50a.MainActivity");
+            //var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().WithLogFile(new FileInfo(@"c:\tmp\appiumlogfile.txt")).Build();
+            //_appiumLocalService.Start(); ;
+            //var driver = new AndroidDriver(_appiumLocalService, capabilities);
+            var driver = new AndroidDriver(new Uri("http://127.0.0.1:4723/"), capabilities);
 
-            var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().Build();
-            _appiumLocalService.Start(); ;
-            var driver = new AndroidDriver(_appiumLocalService, capabilities);
+            driver.ActivateApp("com.fluentbytes.carvedrock");
             // tap on second item
             var el1 = driver.FindElement(MobileBy.AccessibilityId("Second item"));
             el1.Click();
@@ -276,5 +281,18 @@ namespace CarvedRock.UITests
 
             driver.CloseApp();
         }
+
+
+        void FlickUp(AndroidDriver driver, AppiumElement element)
+        {
+            var input = new PointerInputDevice(PointerKind.Touch); 
+            ActionSequence flickUp = new ActionSequence(input);
+            flickUp.AddAction(input.CreatePointerMove(element, 0, 0, TimeSpan.Zero));
+            flickUp.AddAction(input.CreatePointerDown(MouseButton.Left));
+            flickUp.AddAction(input.CreatePointerMove(element, 0, -200, TimeSpan.FromMilliseconds(200)));
+            flickUp.AddAction(input.CreatePointerUp(MouseButton.Left));
+            driver.PerformActions(new List<ActionSequence>() { flickUp });
+        }
+
     }
 }
