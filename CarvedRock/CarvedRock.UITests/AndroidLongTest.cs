@@ -167,8 +167,7 @@ namespace CarvedRock.UITests
             _appiumLocalService.Start(); 
             
             var driver = new AndroidDriver(_appiumLocalService, capabilities);
-            //var driver = new AndroidDriver(new Uri("http://127.0.0.1:4723/"), capabilities);
-
+      
             driver.ActivateApp("com.fluentbytes.carvedrock");
 
             var el1 = driver.FindElement(MobileBy.AccessibilityId("Add"));
