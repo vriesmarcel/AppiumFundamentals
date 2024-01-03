@@ -20,6 +20,7 @@ namespace CarvedRock.UITests
         {
             System.Environment.SetEnvironmentVariable("ANDROID_HOME", @"C:\Program Files (x86)\Android\android-sdk");
             System.Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Program Files\Android\jdk\jdk-8.0.302.8-hotspot\jdk8u302-b08");
+            System.Environment.SetEnvironmentVariable("APPIUM_HOME", @"C:\Users\vries\.appium\node_modules\appium-uiautomator2-driver");
 
             var capabilities = new AppiumOptions();
             // automatic start of the emulator if not running
@@ -36,11 +37,11 @@ namespace CarvedRock.UITests
             packagePath = Path.GetFullPath(packagePath);
             Console.WriteLine($"Package path: {packagePath}");
             capabilities.App = packagePath;
-        
-            //var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().WithLogFile(new FileInfo(@"c:\tmp\appiumlogfile.txt")).Build();
-            //_appiumLocalService.Start(); ;
-            //var driver = new AndroidDriver(_appiumLocalService, capabilities);
-           var driver = new AndroidDriver(new Uri("http://127.0.0.1:4723/"), capabilities);
+
+            var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().WithLogFile(new FileInfo(@"c:\tmp\appiumlogfile.txt")).Build();
+            _appiumLocalService.Start(); ;
+            var driver = new AndroidDriver(_appiumLocalService, capabilities);
+            //var driver = new AndroidDriver(new Uri("http://127.0.0.1:4723/"), capabilities);
 
             driver.ActivateApp("com.fluentbytes.carvedrock");
 
@@ -244,6 +245,7 @@ namespace CarvedRock.UITests
         {
             System.Environment.SetEnvironmentVariable("ANDROID_HOME", @"C:\Program Files (x86)\Android\android-sdk");
             System.Environment.SetEnvironmentVariable("JAVA_HOME", @"C:\Program Files\Android\jdk\jdk-8.0.302.8-hotspot\jdk8u302-b08");
+            System.Environment.SetEnvironmentVariable("APPIUM_HOME", @"C:\Users\vries\.appium\node_modules\appium-uiautomator2-driver");
 
             var capabilities = new AppiumOptions();
             // automatic start of the emulator if not running
@@ -261,10 +263,10 @@ namespace CarvedRock.UITests
             Console.WriteLine($"Package path: {packagePath}");
             capabilities.App = packagePath;
 
-            //var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().WithLogFile(new FileInfo(@"c:\tmp\appiumlogfile.txt")).Build();
-            //_appiumLocalService.Start(); ;
-            //var driver = new AndroidDriver(_appiumLocalService, capabilities);
-            var driver = new AndroidDriver(new Uri("http://127.0.0.1:4723/"), capabilities);
+            var _appiumLocalService = new AppiumServiceBuilder().UsingAnyFreePort().WithLogFile(new FileInfo(@"c:\tmp\appiumlogfile.txt")).Build();
+            _appiumLocalService.Start(); ;
+            var driver = new AndroidDriver(_appiumLocalService, capabilities);
+            //var driver = new AndroidDriver(new Uri("http://127.0.0.1:4723/"), capabilities);
 
             driver.ActivateApp("com.fluentbytes.carvedrock");
             // tap on second item
